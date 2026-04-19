@@ -3,8 +3,26 @@
 > **Theory of Computation | Unit 1 Assignment**
 > Interactive simulation of NFA → DFA conversion via Subset Construction + DFA Minimization via Table-Filling Algorithm
 
+## Project Structure
+
+```
+TOC/
+├── index.html        # Main app HTML
+├── css/
+│   └── style.css     
+├── js/
+│   ├── nfa.js        # NFA/DFA classes + algorithms
+│   ├── graph.js      # Canvas renderer
+│   ├── convert.js    # Subset construction panel
+│   ├── minimize.js   # Minimization panel
+│   ├── tester.js     # String testing panel
+│   └── ui.js         # Main UI controller
+├── vercel.json       # Vercel deployment config
+└── package.json
+```
+
 ## Live Demo
-*Deploy to Vercel and add your link here*
+[*Live Vercel link*](https://tocunit1.vercel.app/)
 
 ## Features
 
@@ -36,23 +54,7 @@
 - Full execution trace with ACCEPT/REJECT verdict
 - Quick-test chips, test history
 
-## Project Structure
 
-```
-TOC/
-├── index.html        # Main app HTML
-├── css/
-│   └── style.css     # Dark glassmorphism theme
-├── js/
-│   ├── nfa.js        # NFA/DFA classes + algorithms
-│   ├── graph.js      # Canvas renderer
-│   ├── convert.js    # Subset construction panel
-│   ├── minimize.js   # Minimization panel
-│   ├── tester.js     # String testing panel
-│   └── ui.js         # Main UI controller
-├── vercel.json       # Vercel deployment config
-└── package.json
-```
 
 ## Run Locally
 
