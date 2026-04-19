@@ -1,7 +1,10 @@
 # AutomataViz — NFA to DFA Converter & Minimizer
 
-> **Theory of Computation | Unit 1 Assignment**
+> **Theory of Computation |Assignment**
 > Interactive simulation of NFA → DFA conversion via Subset Construction + DFA Minimization via Table-Filling Algorithm
+
+## Live Demo
+[*Live Vercel link*](https://tocunit1.vercel.app/)
 
 ## Project Structure
 
@@ -21,8 +24,7 @@ TOC/
 └── package.json
 ```
 
-## Live Demo
-[*Live Vercel link*](https://tocunit1.vercel.app/)
+
 
 ## Features
 
