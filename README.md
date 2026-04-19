@@ -24,6 +24,14 @@ TOC/
 └── package.json
 ```
 
+## How to Use
+
+1. **Build your NFA** — Go to the *NFA Builder* tab. Click "Load Example NFA" to use the pre-loaded example, or add your own states, alphabet symbols, and transitions manually.
+2. **Convert to DFA** — Click "Convert NFA → DFA". Use "Next Step" to walk through the Subset Construction algorithm step by step, or click "Run All" to see the complete result at once.
+3. **Minimize the DFA** — Click "Minimize DFA →". Step through or run the Table-Filling (Myhill-Nerode) algorithm to see equivalent states merged.
+4. **Test Strings** — Click "Test Strings →". Enter any input string and click "Run" to see if it's accepted or rejected, with a full execution trace. Use "Step" to advance one symbol at a time.
+
+
 
 
 ## Features
