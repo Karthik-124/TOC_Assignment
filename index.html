@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutomataViz — NFA to DFA Converter & Minimizer</title>
+  <meta name="description" content="Interactive Theory of Computation simulator: NFA to DFA conversion via subset construction, DFA minimization, and live string testing with step-by-step visualization." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- Background -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="8" cy="16" r="5" stroke="currentColor" stroke-width="2"/>
+            <circle cx="24" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
+            <circle cx="24" cy="24" r="4" stroke="currentColor" stroke-width="2"/>
+            <path d="M13 14L20 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M13 18L20 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M28 8L31 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M28 24L31 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <span class="logo-title">AutomataViz</span>
+          <span class="logo-sub">NFA → DFA · Minimization</span>
+        </div>
+      </div>
+      <div class="header-badges">
+        <span class="badge badge-unit">Unit 1</span>
+        <span class="badge badge-toc">Theory of Computation</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tab Navigation -->
+  <nav class="tab-nav" role="tablist" aria-label="Simulator sections">
+    <button class="tab-btn active" data-tab="builder" id="tab-builder" role="tab" aria-selected="true" aria-controls="panel-builder">
+      <svg viewBox="0 0 20 20" fill="none"><circle cx="5" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="15" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="15" cy="15" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 8.5L12 6.5M8 11.5L12 13.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span>NFA Builder</span>
+      <span class="tab-step">1</span>
+    </button>
+    <div class="tab-arrow">→</div>
+    <button class="tab-btn" data-tab="convert" id="tab-convert" role="tab" aria-selected="false" aria-controls="panel-convert">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M3 10H17M13 6L17 10L13 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>NFA → DFA</span>
+      <span class="tab-step">2</span>
+    </button>
+    <div class="tab-arrow">→</div>
+    <button class="tab-btn" data-tab="minimize" id="tab-minimize" role="tab" aria-selected="false" aria-controls="panel-minimize">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M9 6H14V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Minimization</span>
+      <span class="tab-step">3</span>
+    </button>
+    <div class="tab-arrow">→</div>
+    <button class="tab-btn" data-tab="test" id="tab-test" role="tab" aria-selected="false" aria-controls="panel-test">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M5 10L8 13L15 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/></svg>
+      <span>String Tester</span>
+      <span class="tab-step">4</span>
+    </button>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="app-main">
+
+    <!-- ═══════════════════════════════════════ PANEL 1: NFA BUILDER ═══ -->
+    <section class="tab-panel active" id="panel-builder" role="tabpanel" aria-labelledby="tab-builder">
+      <div class="panel-layout">
+
+        <!-- Left: Controls -->
+        <aside class="controls-panel">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M10 3V10M10 10L7 7M10 10L13 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 14H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 17H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Alphabet
+              </h2>
+            </div>
+            <div class="card-body">
+              <label class="field-label" for="alphabet-input">Symbols (comma-separated)</label>
+              <div class="input-row">
+                <input type="text" id="alphabet-input" class="text-input mono" placeholder="a, b" value="a, b" />
+                <button class="btn btn-secondary" id="set-alphabet-btn">Set</button>
+              </div>
+              <div class="alphabet-preview" id="alphabet-preview">
+                <span class="alpha-chip">a</span>
+                <span class="alpha-chip">b</span>
+                <span class="alpha-chip epsilon">ε</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 7V10L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                States
+              </h2>
+            </div>
+            <div class="card-body">
+              <div class="input-row">
+                <input type="text" id="state-name-input" class="text-input mono" placeholder="q0" />
+                <button class="btn btn-primary" id="add-state-btn">+ Add</button>
+              </div>
+              <div class="states-list" id="states-list"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M4 10H16M12 6L16 10L12 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Transitions
+              </h2>
+            </div>
+            <div class="card-body">
+              <div class="field-group">
+                <label class="field-label" for="trans-from">From State</label>
+                <select id="trans-from" class="select-input mono"></select>
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="trans-symbol">Symbol</label>
+                <select id="trans-symbol" class="select-input mono"></select>
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="trans-to">To State(s)</label>
+                <div class="multiselect" id="trans-to-container">
+                  <select id="trans-to" class="select-input mono" multiple></select>
+                </div>
+                <p class="field-hint">Hold Ctrl/Cmd to select multiple</p>
+              </div>
+              <button class="btn btn-primary full-width" id="add-trans-btn">Add Transition</button>
+              <div class="transitions-list" id="transitions-list"></div>
+            </div>
+          </div>
+
+          <div class="card card-actions">
+            <div class="card-body">
+              <button class="btn btn-ghost full-width" id="load-example-btn">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M10 3V10M10 10L7 7M10 10L13 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="3" y="13" width="14" height="4" rx="1" stroke="currentColor" stroke-width="1.5"/></svg>
+                Load Example NFA
+              </button>
+              <button class="btn btn-accent full-width" id="go-convert-btn">
+                Convert NFA → DFA
+                <svg viewBox="0 0 20 20" fill="none"><path d="M4 10H16M12 6L16 10L12 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Right: Canvas -->
+        <div class="canvas-panel">
+          <div class="canvas-toolbar">
+            <span class="canvas-label">NFA Graph — Click canvas to add states, drag to move</span>
+            <div class="toolbar-actions">
+              <button class="tool-btn active" id="tool-select" title="Select & Move">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M5 3L5 15L8.5 11.5L11 17L13 16L10.5 10.5L15 10.5L5 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="tool-btn" id="tool-addstate" title="Click to Add State">
+                <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M10 7V13M7 10H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </button>
+              <button class="tool-btn" id="tool-edge" title="Draw Transition">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M4 16L16 4M12 4H16V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="sep"></div>
+              <button class="tool-btn" id="clear-canvas-btn" title="Clear All">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M4 4L16 16M4 16L16 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="canvas-wrapper" id="nfa-canvas-wrapper">
+            <canvas id="nfa-canvas"></canvas>
+            <div class="canvas-hint" id="canvas-hint">
+              <div class="hint-icon">🎯</div>
+              <p>Double-click on canvas to add a state, or use the + button in the sidebar</p>
+              <p class="hint-sub">Or <button class="link-btn" id="load-example-hint-btn">load an example</button> to get started</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════ PANEL 2: NFA→DFA CONVERSION ═══ -->
+    <section class="tab-panel" id="panel-convert" role="tabpanel" aria-labelledby="tab-convert">
+      <div class="convert-layout">
+        <div class="convert-header-row">
+          <h2 class="section-title">Subset Construction Algorithm</h2>
+          <div class="convert-controls">
+            <button class="btn btn-secondary" id="step-back-btn" disabled>
+              <svg viewBox="0 0 20 20" fill="none"><path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Back
+            </button>
+            <button class="btn btn-primary" id="step-next-btn">
+              Next Step
+              <svg viewBox="0 0 20 20" fill="none"><path d="M8 4L14 10L8 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="btn btn-accent" id="run-all-btn">
+              Run All
+              <svg viewBox="0 0 20 20" fill="none"><path d="M6 4L16 10L6 16V4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="convert-grid">
+          <!-- Step log -->
+          <div class="card step-log-card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M4 6H16M4 10H16M4 14H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Step-by-Step Log
+              </h3>
+              <span class="step-counter" id="step-counter">Step 0</span>
+            </div>
+            <div class="step-log" id="step-log">
+              <div class="step-entry step-init">
+                <div class="step-dot"></div>
+                <div class="step-content">
+                  <span class="step-label">Ready</span>
+                  <p>Click "Next Step" to begin the subset construction, or "Run All" to see the complete conversion.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subset table -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M3 7H17M7 7V17" stroke="currentColor" stroke-width="1.5"/></svg>
+                Subset Construction Table
+              </h3>
+            </div>
+            <div class="table-scroll" id="subset-table-container">
+              <div class="empty-table-hint">Run the conversion to see the transition table</div>
+            </div>
+          </div>
+
+          <!-- DFA Graph -->
+          <div class="card dfa-graph-card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><circle cx="5" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="15" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="15" cy="15" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 8.5L12 6.5M8 11.5L12 13.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Resulting DFA
+              </h3>
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:0.72rem;color:var(--text-muted)">Scroll to zoom · Drag to pan</span>
+                <button class="tool-btn" id="dfa-fit-btn" title="Fit all states in view">
+                  <svg viewBox="0 0 20 20" fill="none"><path d="M3 7V3H7M13 3H17V7M17 13V17H13M7 17H3V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="canvas-wrapper">
+              <canvas id="dfa-canvas"></canvas>
+              <div class="canvas-hint" id="dfa-canvas-hint">
+                <div class="hint-icon">⚡</div>
+                <p>The DFA will appear here after conversion</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="go-minimize-row">
+          <button class="btn btn-accent" id="go-minimize-btn" disabled>
+            Minimize DFA →
+            <svg viewBox="0 0 20 20" fill="none"><path d="M8 4L14 10L8 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════════════════════════════ PANEL 3: MINIMIZATION ═══ -->
+    <section class="tab-panel" id="panel-minimize" role="tabpanel" aria-labelledby="tab-minimize">
+      <div class="minimize-layout">
+        <div class="convert-header-row">
+          <h2 class="section-title">DFA Minimization — Table Filling Algorithm</h2>
+          <div class="convert-controls">
+            <button class="btn btn-secondary" id="min-step-back-btn" disabled>
+              <svg viewBox="0 0 20 20" fill="none"><path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Back
+            </button>
+            <button class="btn btn-primary" id="min-step-next-btn">
+              Next Step
+              <svg viewBox="0 0 20 20" fill="none"><path d="M8 4L14 10L8 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="btn btn-accent" id="min-run-all-btn">
+              Run All
+              <svg viewBox="0 0 20 20" fill="none"><path d="M6 4L16 10L6 16V4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="minimize-grid">
+          <!-- Step log -->
+          <div class="card step-log-card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M4 6H16M4 10H16M4 14H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Minimization Log
+              </h3>
+              <span class="step-counter" id="min-step-counter">Step 0</span>
+            </div>
+            <div class="step-log" id="min-step-log">
+              <div class="step-entry step-init">
+                <div class="step-dot"></div>
+                <div class="step-content">
+                  <span class="step-label">Ready</span>
+                  <p>Click "Next Step" to begin the table-filling (Myhill-Nerode) minimization algorithm.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Distinguishability table -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M3 7H17M7 7V17" stroke="currentColor" stroke-width="1.5"/></svg>
+                Distinguishability Table
+              </h3>
+            </div>
+            <div class="table-scroll" id="min-table-container">
+              <div class="empty-table-hint">Run minimization to see the table</div>
+            </div>
+          </div>
+
+          <!-- Equivalence classes -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="13" cy="13" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M7 10V13H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Equivalence Classes
+              </h3>
+            </div>
+            <div id="equiv-classes-container">
+              <div class="empty-table-hint">Equivalent state groups will appear here</div>
+            </div>
+          </div>
+
+          <!-- Minimized DFA graph -->
+          <div class="card dfa-graph-card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><circle cx="5" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="15" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="15" cy="15" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 8.5L12 6.5M8 11.5L12 13.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Minimized DFA
+              </h3>
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:0.72rem;color:var(--text-muted)">Scroll to zoom · Drag to pan</span>
+                <button class="tool-btn" id="min-dfa-fit-btn" title="Fit all states in view">
+                  <svg viewBox="0 0 20 20" fill="none"><path d="M3 7V3H7M13 3H17V7M17 13V17H13M7 17H3V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="canvas-wrapper">
+              <canvas id="min-dfa-canvas"></canvas>
+              <div class="canvas-hint" id="min-dfa-canvas-hint">
+                <div class="hint-icon">✨</div>
+                <p>The minimized DFA will appear here</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="go-minimize-row">
+          <button class="btn btn-accent" id="go-test-btn" disabled>
+            Test Strings →
+            <svg viewBox="0 0 20 20" fill="none"><path d="M8 4L14 10L8 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ PANEL 4: STRING TESTER ═══ -->
+    <section class="tab-panel" id="panel-test" role="tabpanel" aria-labelledby="tab-test">
+      <div class="test-layout">
+        <div class="test-top">
+          <div class="card test-input-card">
+            <div class="card-header">
+              <h2 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M4 8H16M4 12H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Test Input String
+              </h2>
+            </div>
+            <div class="card-body">
+              <div class="test-automaton-selector">
+                <label class="field-label">Automaton to test</label>
+                <div class="radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="test-automaton" value="dfa" checked id="test-dfa-radio" />
+                    <span>DFA (after conversion)</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="test-automaton" value="min-dfa" id="test-min-dfa-radio" />
+                    <span>Minimized DFA</span>
+                  </label>
+                </div>
+              </div>
+              <div class="test-input-row">
+                <input type="text" id="test-string-input" class="text-input mono large" placeholder="Enter string to test (e.g. abba)" />
+                <button class="btn btn-primary" id="run-test-btn">
+                  <svg viewBox="0 0 20 20" fill="none"><path d="M6 4L16 10L6 16V4Z" fill="currentColor"/></svg>
+                  Run
+                </button>
+                <button class="btn btn-secondary" id="step-test-btn">Step</button>
+              </div>
+              <div class="quick-tests">
+                <span class="field-label">Quick tests:</span>
+                <div class="quick-test-chips" id="quick-test-chips"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card test-result-card">
+            <div class="card-body test-result-body">
+              <div class="result-indicator" id="result-indicator">
+                <div class="result-icon" id="result-icon">?</div>
+                <div class="result-text">
+                  <div class="result-verdict" id="result-verdict">Awaiting input</div>
+                  <div class="result-detail" id="result-detail">Enter a string and click Run</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="test-bottom">
+          <!-- DFA animation -->
+          <div class="card dfa-graph-card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M7 10L9 12L13 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                DFA Simulation
+              </h3>
+              <div class="playback-controls">
+                <button class="tool-btn" id="test-prev-btn" title="Previous step" disabled>
+                  <svg viewBox="0 0 20 20" fill="none"><path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </button>
+                <button class="tool-btn" id="test-next-btn" title="Next step" disabled>
+                  <svg viewBox="0 0 20 20" fill="none"><path d="M8 4L14 10L8 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="canvas-wrapper">
+              <canvas id="test-canvas"></canvas>
+              <div class="canvas-hint" id="test-canvas-hint">
+                <div class="hint-icon">🔬</div>
+                <p>Test a string to see the DFA simulation</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step-by-step trace -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M4 6H16M4 10H12M4 14H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Execution Trace
+              </h3>
+            </div>
+            <div class="trace-container" id="trace-container">
+              <div class="empty-table-hint">Run a string to see the trace</div>
+            </div>
+
+            <div class="card-header" style="border-top: 1px solid var(--border);">
+              <h3 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M3 5H17M5 5V15H15V5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Test History
+              </h3>
+            </div>
+            <div class="trace-container" id="test-history-container">
+              <div class="empty-table-hint">Test results will appear here</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast notifications -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Edge label dialog -->
+  <div class="dialog-overlay" id="edge-dialog-overlay" style="display:none">
+    <div class="dialog">
+      <h3 class="dialog-title">Add Transition</h3>
+      <p class="dialog-desc" id="edge-dialog-desc">Choose symbol for this transition</p>
+      <div class="symbol-chips" id="edge-symbol-chips"></div>
+      <div class="dialog-actions">
+        <button class="btn btn-secondary" id="edge-dialog-cancel">Cancel</button>
+        <button class="btn btn-primary" id="edge-dialog-confirm">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/nfa.js"></script>
+  <script src="js/graph.js"></script>
+  <script src="js/convert.js"></script>
+  <script src="js/minimize.js"></script>
+  <script src="js/tester.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>

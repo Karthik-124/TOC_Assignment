@@ -1,0 +1,12 @@
+{
+  "name": "automata-viz",
+  "version": "1.0.0",
+  "description": "NFA to DFA Converter and DFA Minimizer — Interactive Theory of Computation Simulator",
+  "scripts": {
+    "dev": "npx serve . -p 3000",
+    "start": "npx serve ."
+  },
+  "keywords": ["NFA", "DFA", "automata", "theory-of-computation", "subset-construction", "minimization"],
+  "author": "AutomataViz",
+  "license": "MIT"
+}
