@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AutomataViz — NFA to DFA Converter & Minimizer</title>
+  <title>AutomataViz — NFA/DFA · PDA Simulator</title>
   <meta name="description" content="Interactive Theory of Computation simulator: NFA to DFA conversion via subset construction, DFA minimization, and live string testing with step-by-step visualization." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -35,11 +35,11 @@
         </div>
         <div>
           <span class="logo-title">AutomataViz</span>
-          <span class="logo-sub">NFA → DFA · Minimization</span>
+          <span class="logo-sub">NFA → DFA · Minimization · PDA</span>
         </div>
       </div>
       <div class="header-badges">
-        <span class="badge badge-unit">Unit 1</span>
+        <span class="badge badge-unit">Unit 1 &amp; 2</span>
         <span class="badge badge-toc">Theory of Computation</span>
       </div>
     </div>
@@ -69,6 +69,12 @@
       <svg viewBox="0 0 20 20" fill="none"><path d="M5 10L8 13L15 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/></svg>
       <span>String Tester</span>
       <span class="tab-step">4</span>
+    </button>
+    <div class="tab-arrow">→</div>
+    <button class="tab-btn" data-tab="pda" id="tab-pda" role="tab" aria-selected="false" aria-controls="panel-pda">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="7" y="2" width="6" height="16" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M7 6H4M7 10H3M7 14H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M13 6H16M13 10H17M13 14H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span>PDA Simulator</span>
+      <span class="tab-step">5</span>
     </button>
   </nav>
 
@@ -486,6 +492,222 @@
       </div>
     </section>
 
+    <!-- ════════════════════════════════════════ PANEL 5: PDA SIMULATOR ═══ -->
+    <section class="tab-panel" id="panel-pda" role="tabpanel" aria-labelledby="tab-pda">
+      <div class="pda-layout">
+
+        <!-- Header -->
+        <div class="convert-header-row">
+          <h2 class="section-title">Pushdown Automaton Simulator</h2>
+          <div class="convert-controls">
+            <button class="btn btn-secondary" id="pda-example-anbn">aⁿbⁿ</button>
+            <button class="btn btn-secondary" id="pda-example-parens">Balanced ( )</button>
+            <button class="btn btn-secondary" id="pda-example-wwrev">ww<sup>R</sup></button>
+          </div>
+        </div>
+
+        <div class="pda-grid">
+
+          <!-- LEFT: PDA Definition -->
+          <div class="pda-left">
+
+            <div class="card">
+              <div class="card-header"><h3 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 7V10L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                PDA Definition
+              </h3></div>
+              <div class="card-body">
+                <div class="pda-info-grid">
+                  <span class="field-label">States</span>
+                  <div id="pda-states-display" class="pda-chips"></div>
+                  <span class="field-label">Input Σ</span>
+                  <span id="pda-input-alpha-display" class="mono-val">—</span>
+                  <span class="field-label">Stack Γ</span>
+                  <span id="pda-stack-alpha-display" class="mono-val">—</span>
+                  <span class="field-label">Start</span>
+                  <span id="pda-start-state-display" class="mono-val">—</span>
+                  <span class="field-label">Start Stack</span>
+                  <span id="pda-start-stack-display" class="mono-val">—</span>
+                  <span class="field-label">Accept</span>
+                  <span id="pda-accept-display" class="mono-val">—</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Transition table -->
+            <div class="card">
+              <div class="card-header"><h3 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M3 7H17M7 7V17" stroke="currentColor" stroke-width="1.5"/></svg>
+                Transition Function
+              </h3></div>
+              <div class="table-scroll" style="max-height:220px">
+                <table class="subset-table">
+                  <thead><tr>
+                    <th>From</th><th>Input</th><th>Stack Top</th><th>To</th><th>Push</th><th></th>
+                  </tr></thead>
+                  <tbody id="pda-trans-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Add transition form -->
+            <div class="card">
+              <div class="card-header"><h3 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Add Transition
+              </h3></div>
+              <div class="card-body">
+                <div class="pda-form-row">
+                  <div class="field-group">
+                    <label class="field-label">From</label>
+                    <select id="pda-form-from" class="select-input mono"></select>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label">Input</label>
+                    <select id="pda-form-input" class="select-input mono"></select>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label">Stack Top</label>
+                    <select id="pda-form-stack-top" class="select-input mono"></select>
+                  </div>
+                </div>
+                <div class="pda-form-row">
+                  <div class="field-group">
+                    <label class="field-label">To</label>
+                    <select id="pda-form-to" class="select-input mono"></select>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label">Push string</label>
+                    <input id="pda-form-push-text" class="text-input mono" placeholder="AZ or ε" />
+                  </div>
+                  <div class="field-group" style="align-self:flex-end">
+                    <button class="btn btn-primary full-width" id="pda-def-add-trans">+ Add</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Add state / alphabets -->
+            <div class="card">
+              <div class="card-header"><h3 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M10 7V13M7 10H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Add State / Alphabets
+              </h3></div>
+              <div class="card-body">
+                <div class="field-group">
+                  <label class="field-label">State Name</label>
+                  <div class="input-row">
+                    <input id="pda-new-state-name" class="text-input mono" placeholder="q0" />
+                    <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:var(--text-muted)"><input type="checkbox" id="pda-new-state-start"> Start</label>
+                    <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:var(--text-muted)"><input type="checkbox" id="pda-new-state-accept"> Accept</label>
+                    <button class="btn btn-primary" id="pda-def-add-state">Add</button>
+                  </div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Input Σ (comma-sep)</label>
+                  <div class="input-row">
+                    <input id="pda-input-alpha-input" class="text-input mono" placeholder="a, b" />
+                    <button class="btn btn-secondary" id="pda-def-set-alpha">Set</button>
+                  </div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Stack Γ (comma-sep)</label>
+                  <input id="pda-stack-alpha-input" class="text-input mono" placeholder="A, Z" />
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /pda-left -->
+
+          <!-- RIGHT: Simulator -->
+          <div class="pda-right">
+
+            <!-- Input + controls -->
+            <div class="card">
+              <div class="card-header"><h2 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M4 8H16M4 12H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Simulate
+              </h2>
+              <div class="convert-controls">
+                <button class="btn btn-secondary" id="pda-reset-btn">Reset</button>
+                <button class="btn btn-primary" id="pda-step-btn">
+                  Step
+                  <svg viewBox="0 0 20 20" fill="none"><path d="M8 4L14 10L8 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </button>
+                <button class="btn btn-accent" id="pda-run-btn">
+                  Run
+                  <svg viewBox="0 0 20 20" fill="none"><path d="M6 4L16 10L6 16V4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+              </div>
+              <div class="card-body">
+                <div class="test-input-row">
+                  <input type="text" id="pda-input-string" class="text-input mono large" placeholder="e.g. aaabbb" />
+                </div>
+                <div class="pda-quick-chips" style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+                  <span class="field-label">Quick:</span>
+                  <button class="quick-chip accept" onclick="document.getElementById('pda-input-string').value='aabb'">aabb</button>
+                  <button class="quick-chip accept" onclick="document.getElementById('pda-input-string').value='ab'">ab</button>
+                  <button class="quick-chip accept" onclick="document.getElementById('pda-input-string').value='aaaabbbb'">aaaabbbb</button>
+                  <button class="quick-chip reject" onclick="document.getElementById('pda-input-string').value='aab'">aab</button>
+                  <button class="quick-chip reject" onclick="document.getElementById('pda-input-string').value='ba'">ba</button>
+                  <button class="quick-chip accept" onclick="document.getElementById('pda-input-string').value=''">ε (empty)</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Verdict -->
+            <div id="pda-verdict-box" class="pda-verdict-box">
+              <span id="pda-verdict-text"></span>
+            </div>
+
+            <!-- Current config -->
+            <div class="card">
+              <div class="card-header"><h3 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M7 10L9 12L13 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Current Configuration
+              </h3></div>
+              <div class="card-body pda-config-row">
+                <div class="pda-config-item">
+                  <span class="field-label">State</span>
+                  <div class="pda-pill" id="pda-current-state-pill">—</div>
+                </div>
+                <div class="pda-config-item">
+                  <span class="field-label">Remaining Input</span>
+                  <div class="pda-pill mono" id="pda-current-input-pill">—</div>
+                </div>
+                <div class="pda-config-item">
+                  <span class="field-label">Stack (top → bottom)</span>
+                  <div id="pda-stack-visual" class="pda-stack">
+                    <div class="stack-empty">Stack empty</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step-by-step trace -->
+            <div class="card">
+              <div class="card-header"><h3 class="card-title">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M4 6H16M4 10H16M4 14H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Computation Trace
+              </h3></div>
+              <div class="table-scroll" style="max-height:280px">
+                <table class="subset-table">
+                  <thead><tr>
+                    <th>#</th><th>State</th><th>Remaining Input</th><th>Stack</th>
+                  </tr></thead>
+                  <tbody id="pda-trace-body">
+                    <tr><td colspan="4" class="empty-table-hint">Run a string to see the trace</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div><!-- /pda-right -->
+        </div><!-- /pda-grid -->
+      </div><!-- /pda-layout -->
+    </section>
+
   </main>
 
   <!-- Toast notifications -->
@@ -509,6 +731,8 @@
   <script src="js/convert.js"></script>
   <script src="js/minimize.js"></script>
   <script src="js/tester.js"></script>
+  <script src="js/pda.js"></script>
+  <script src="js/pda-ui.js"></script>
   <script src="js/ui.js"></script>
 </body>
 </html>

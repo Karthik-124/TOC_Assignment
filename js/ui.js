@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ConvertPanel.init();
   MinimizePanel.init();
   TesterPanel.init();
+  PDAPanel.init();
   loadExample(); // Load a default example on startup
 });
 
