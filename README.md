@@ -1,10 +1,30 @@
 # AutomataViz — NFA/DFA · PDA Simulator
 
-> **Theory of Computation | Unit 1 & 2 Assignment**
+> **Theory of Computation |Assignment**
 > Interactive simulation of NFA → DFA conversion, DFA Minimization, and Pushdown Automaton simulation
 
 ## Live Demo
 [**tocunit1.vercel.app**](https://tocunit1.vercel.app/)
+
+## Project Structure
+
+```
+TOC/
+├── index.html        # Main app HTML
+├── css/
+│   └── style.css     # Dark glassmorphism theme
+├── js/
+│   ├── nfa.js        # NFA/DFA classes + algorithms
+│   ├── graph.js      # Canvas renderer (pan/zoom)
+│   ├── convert.js    # Subset construction panel
+│   ├── minimize.js   # Minimization panel
+│   ├── tester.js     # String testing panel
+│   ├── pda.js        # PDA class + simulation logic
+│   ├── pda-ui.js     # PDA simulator panel controller
+│   └── ui.js         # Main UI controller
+├── vercel.json
+└── package.json
+```
 
 ## How to Use
 
@@ -55,25 +75,7 @@
 - ACCEPTED / REJECTED verdict with glow effect
 - Manual PDA builder — add states, set Σ and Γ, define transitions
 
-## Project Structure
 
-```
-TOC/
-├── index.html        # Main app HTML
-├── css/
-│   └── style.css     # Dark glassmorphism theme
-├── js/
-│   ├── nfa.js        # NFA/DFA classes + algorithms
-│   ├── graph.js      # Canvas renderer (pan/zoom)
-│   ├── convert.js    # Subset construction panel
-│   ├── minimize.js   # Minimization panel
-│   ├── tester.js     # String testing panel
-│   ├── pda.js        # PDA class + simulation logic
-│   ├── pda-ui.js     # PDA simulator panel controller
-│   └── ui.js         # Main UI controller
-├── vercel.json
-└── package.json
-```
 
 ## Algorithms Implemented
 
